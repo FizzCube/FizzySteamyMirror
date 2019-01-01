@@ -95,7 +95,7 @@ namespace FizzySteam
 
         protected virtual void OnConnectFail(P2PSessionConnectFail_t result)
         {
-            Debug.Log("OnConnectFail");
+            Debug.Log("OnConnectFail " + result);
         }
 
         protected void SendInternal(CSteamID host, byte[] msgBuffer)

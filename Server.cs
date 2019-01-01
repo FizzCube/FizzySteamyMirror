@@ -209,8 +209,6 @@ namespace FizzySteam
 
                     while (Receive(out readPacketSize, out clientSteamID, out receiveBuffer))
                     {
-                        Debug.Log(Time.time.ToString("n2") + " : ReceiveLoop Got Message");
-
                         if (readPacketSize == 0)
                         {
                             continue;

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using Mirror;
+using Mirror.Transport;
 
 public class FizzySteamyMirror : TransportLayer
 {
