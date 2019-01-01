@@ -25,7 +25,7 @@ Requires .Net 4.x
 3. In your class extending from Mirror's NetworkManager class, you would do:
 ```csharp
 public override void InitializeTransport() {
-  Transport.layer = new FizzySteamyMirror();
+  NetworkManager.transport = new FizzySteamyMirror();
 }
 ```
 Then, to start as a host:
