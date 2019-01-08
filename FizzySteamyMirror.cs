@@ -45,9 +45,9 @@ public class FizzySteamyMirror : TransportLayer
 
     // server
     public virtual bool ServerActive() { return server.Active; }
-    public virtual void ServerStart(string address, int port, int maxConnections)
+    public virtual void ServerStart()
     {
-        server.Listen(maxConnections);
+        server.Listen();
     }
 
     public virtual void ServerStartWebsockets(string address, int port, int maxConnections)
