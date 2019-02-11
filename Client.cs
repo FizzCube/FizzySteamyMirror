@@ -232,15 +232,17 @@ namespace FizzySteam
         }
 
         // send the data or throw exception
-        public void Send(byte[] data, int channelId)
+        public bool Send(byte[] data, int channelId)
         {
             if (Connected)
             {
                 Send(hostSteamID, data, channelToSendType(channelId));
+                return true;
             }
             else
             {
                 throw new Exception("Not Connected");
+                return false;
             }
         }
 

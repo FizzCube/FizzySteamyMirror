@@ -296,18 +296,20 @@ namespace FizzySteam
             CloseP2PSessionWithUser(steamClient.steamID);
         }
 
-        public void Send(int connectionId, byte[] data, int channelId = 0)
+        public bool Send(int connectionId, byte[] data, int channelId = 0)
         {
             try
             {
                 SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionId];
 
                 Send(steamClient.steamID, data, channelToSendType(channelId));
+                return true;
             }
             catch (KeyNotFoundException)
             {
                 //we have no idea who this connection is
                 Debug.LogError("Tryign to Send on a connection thats not known " + connectionId);
+                return false;
             }
 
         }
