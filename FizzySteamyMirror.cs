@@ -2,16 +2,23 @@
 using UnityEngine;
 using Mirror;
 using FizzySteam;
+using Steamworks;
 
 public class FizzySteamyMirror : Transport
 {
 
-    protected FizzySteam.Client client = new FizzySteam.Client();
-    protected FizzySteam.Server server = new FizzySteam.Server();
+    protected Client client = new Client();
+    protected Server server = new Server();
     public float messageUpdateRate = 0.03333f;
+    public EP2PSend[] channels = new EP2PSend[2] { EP2PSend.k_EP2PSendReliable, EP2PSend.k_EP2PSendUnreliable};
+
+    public override void SetPort(int value) {
+        throw new NotImplementedException();
+    }
 
     private void Start() {
         Common.secondsBetweenPolls = messageUpdateRate;
+        Common.channels = channels;
     }
 
     public FizzySteamyMirror()

@@ -64,8 +64,10 @@ namespace FizzySteam
             connectedComplete.SetResult(connectedComplete.Task);
         }
 
+        System.Threading.CancellationTokenSource cancelToken;
         public async void Connect(string host)
-        { 
+        {
+            cancelToken = new System.Threading.CancellationTokenSource();
             // not if already started
             if (!Disconnected)
             {
@@ -89,13 +91,14 @@ namespace FizzySteam
                 connectedComplete = new TaskCompletionSource<Task>();
                 
                 OnConnected += setConnectedComplete;
+                CloseP2PSessionWithUser(hostSteamID);
 
                 //Send a connect message to the steam client - this requests a connection with them
                 SendInternal(hostSteamID, connectMsgBuffer);
 
                 Task connectedCompleteTask = connectedComplete.Task;
 
-                if (await Task.WhenAny(connectedCompleteTask, Task.Delay(clientConnectTimeoutMS)) != connectedCompleteTask)
+                if (await Task.WhenAny(connectedCompleteTask, Task.Delay(clientConnectTimeoutMS, cancelToken.Token)) != connectedCompleteTask)
                 {
                     //Timed out waiting for connection to complete
                     OnConnected -= setConnectedComplete;
@@ -133,6 +136,7 @@ namespace FizzySteam
             {
                 SendInternal(hostSteamID, disconnectMsgBuffer);
                 Disconnected = true;
+                cancelToken.Cancel();
 
                 //Wait a short time before calling steams disconnect function so the message has time to go out
                 await Task.Delay(100);
@@ -153,19 +157,18 @@ namespace FizzySteam
 
                 while (Connected)
                 {
-                    while (Receive(out readPacketSize, out clientSteamID, out receiveBuffer))
-                    {
-                        if (readPacketSize == 0)
-                        {
-                            continue;
+                    for (int i = 0; i < channels.Length; i++) {
+                        while (Receive(out readPacketSize, out clientSteamID, out receiveBuffer, i)) {
+                            if (readPacketSize == 0) {
+                                continue;
+                            }
+                            if (clientSteamID != hostSteamID) {
+                                Debug.LogError("Received a message from an unknown");
+                                continue;
+                            }
+                            // we received some data,  raise event
+                            OnReceivedData?.Invoke(receiveBuffer);
                         }
-                        if (clientSteamID != hostSteamID)
-                        {
-                            Debug.LogError("Received a message from an unknown");
-                            continue;
-                        }
-                        // we received some data,  raise event
-                        OnReceivedData?.Invoke(receiveBuffer);
                     }
                     //not got a message - wait a bit more
                     await Task.Delay(TimeSpan.FromSeconds(secondsBetweenPolls));
@@ -236,7 +239,7 @@ namespace FizzySteam
         {
             if (Connected)
             {
-                Send(hostSteamID, data, channelToSendType(channelId));
+                Send(hostSteamID, data, channelToSendType(channelId), channelId);
                 return true;
             }
             else
