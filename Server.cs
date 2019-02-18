@@ -288,8 +288,8 @@ namespace FizzySteam
             try
             {
                 SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionId];
-
-                Send(steamClient.steamID, data, channelToSendType(channelId), channelId);
+                //will default to reliable at channel 0 if sent on an unknown channel
+                Send(steamClient.steamID, data, channelToSendType(channelId), channelId >= channels.Length ? 0 : channelId);
                 return true;
             }
             catch (KeyNotFoundException)
