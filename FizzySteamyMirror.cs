@@ -12,10 +12,6 @@ public class FizzySteamyMirror : Transport
     public float messageUpdateRate = 0.03333f;
     public EP2PSend[] channels = new EP2PSend[2] { EP2PSend.k_EP2PSendReliable, EP2PSend.k_EP2PSendUnreliable};
 
-    public override void SetPort(int value) {
-        throw new NotImplementedException();
-    }
-
     private void Start() {
         Common.secondsBetweenPolls = messageUpdateRate;
         Common.channels = channels;
