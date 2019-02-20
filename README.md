@@ -15,7 +15,7 @@ Both of these projects need to be installed and working before you can use this 
 
 ## Setting Up
 1. Download and install the dependencies 
-2. Download **"FizzySteamyMirror"** and place in your Assets folder somewhere. **If errors occur, open a [Issue ticket.](https://github.com/vis2k/Mirror)**
+2. Download **"FizzySteamyMirror"** and place in your Assets folder somewhere. **If errors occur, open a [Issue ticket.](https://github.com/FizzCube/FizzySteamyMirror/issues)**
 3. In your ![Image](http://i.galtrox.com/index.php/s/LX2KPkezLwazrTS/preview) object replace ![Image](http://i.galtrox.com/index.php/s/LTwTTyZLtbmGHY6/preview) with ![Image](http://i.galtrox.com/index.php/s/5PJBqPjJiFdqxG9/preview) 
 
 ## Building
@@ -26,7 +26,7 @@ Both of these projects need to be installed and working before you can use this 
 2. When running the game make sure you have placed it into steam as a **Non-Steam Game**
 
 **Note: The 480(Spacewar) appid is a very grey area, technically, it's not allowed but they don't really do anything about it.
-If you know a better way around this please make a [Issue ticket.](https://github.com/vis2k/Mirror)**
+If you know a better way around this please make a [Issue ticket.](https://github.com/FizzCube/FizzySteamyMirror/issues)**
 
 **Note: When you have a appid from steam then replace the 480 with your own game appid.**
 
@@ -43,13 +43,13 @@ If you know a better way around this please make a [Issue ticket.](https://githu
 3. Place the steam64id into ![Image](http://i.galtrox.com/index.php/s/py8ZgqtkbrzyC3B/preview) then click "Lan Client"
 4. **Bing bash bong DONE!**
 
-## Play Testing your game localy
+## Play Testing your game locally
 
 1.You need to have both scripts **"Fizzy Steamy Mirror"** and **"Telepathy Transport"**
 
 ![Image](http://i.galtrox.com/index.php/s/LPqwLpqXecSiG7z/preview)
 
-2.To test it localy disable **"Fizzy Steamy Mirror"** and enable **"Telepathy Transport"**
+2.To test it locally disable **"Fizzy Steamy Mirror"** and enable **"Telepathy Transport"**
 
 ![Image](http://i.galtrox.com/index.php/s/TdBsCSETdXCp5rr/preview)
 
