@@ -1,8 +1,8 @@
 # FizzySteamyMirror
 
-Fizzcube bringing together [Steam](https://store.steampowered.com/) and [Mirror](https://github.com/rlabrecque/Steamworks.NET)
+Fizzcube bringing together [Steam](https://store.steampowered.com/) and [Mirror](https://github.com/vis2k/Mirror)
 
-This project was previously called **"SteamNetNetworkTransport"**, this is Version 2 it's a complete rebuild utilising Async of a Steam P2P network transport layer for [Mirror](https://github.com/rlabrecque/Steamworks.NET)
+This project was previously called **"SteamNetNetworkTransport"**, this is Version 2 it's a complete rebuild utilising Async of a Steam P2P network transport layer for [Mirror](https://github.com/vis2k/Mirror)
 
 ## Quick start - Demo Project 
 
