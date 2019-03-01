@@ -113,7 +113,7 @@ namespace FizzySteam
             Listening = true;
             this.maxConnections = maxConnections;
 
-            InternalReceiveLoop();
+            await InternalReceiveLoop();
 
             await ReceiveLoop();
 
@@ -301,22 +301,20 @@ namespace FizzySteam
 
         }
 
-        public bool GetConnectionInfo(int connectionId, out string address)
+        public string ServerGetClientAddress(int connectionId)
         {
             try
             {
                 SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionId];
-                address = steamClient.steamID.ToString();
-                return true;
+                return steamClient.steamID.ToString();
             }
             catch (KeyNotFoundException)
             {
                 //we have no idea who this connection is
-                Debug.LogError("Tryign to get info on a connection thats not known " + connectionId);
+                Debug.LogError("Trying to get info on an unknown connection " + connectionId);
             }
 
-            address = null;
-            return false;
+            return null;
         }
 
         protected override void initialise()
