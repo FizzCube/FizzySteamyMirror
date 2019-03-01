@@ -1,4 +1,3 @@
-﻿using System;
 using UnityEngine;
 using Mirror;
 using FizzySteam;
@@ -6,9 +5,8 @@ using Steamworks;
 
 public class FizzySteamyMirror : Transport
 {
-
-    protected Client client = new Client();
-    protected Server server = new Server();
+    protected FizzySteam.Client client = new FizzySteam.Client();
+    protected FizzySteam.Server server = new FizzySteam.Server();
     public float messageUpdateRate = 0.03333f;
     public EP2PSend[] channels = new EP2PSend[2] { EP2PSend.k_EP2PSendReliable, EP2PSend.k_EP2PSendUnreliable};
 
@@ -59,7 +57,7 @@ public class FizzySteamyMirror : Transport
         return server.Disconnect(connectionId);
     }
 
-    public override bool GetConnectionInfo(int connectionId, out string address) { return server.GetConnectionInfo(connectionId, out address); }
+    public override string ServerGetClientAddress(int connectionId) { return server.ServerGetClientAddress(connectionId); }
     public override void ServerStop() { server.Stop(); }
 
     // common
