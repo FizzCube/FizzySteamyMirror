@@ -185,15 +185,6 @@ namespace FizzySteam
                 return EP2PSend.k_EP2PSendReliable;
             }
             return channels[channelId];
-            switch (channelId)
-            {
-                case 0 /*Channels.DefaultReliable*/:
-                    return EP2PSend.k_EP2PSendReliable;
-
-                /*Channels.DefaultUnreliable*/
-                default:
-                    return EP2PSend.k_EP2PSendUnreliable;
-            }
         }
 
     }

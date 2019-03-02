@@ -245,7 +245,7 @@ namespace FizzySteam
             else
             {
                 throw new Exception("Not Connected");
-                return false;
+                //return false;
             }
         }
 

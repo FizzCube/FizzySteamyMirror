@@ -113,7 +113,7 @@ namespace FizzySteam
             Listening = true;
             this.maxConnections = maxConnections;
 
-            await InternalReceiveLoop();
+            InternalReceiveLoop();
 
             await ReceiveLoop();
 
