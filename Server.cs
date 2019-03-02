@@ -5,7 +5,7 @@ using System;
 using Steamworks;
 using System.Threading.Tasks;
 
-namespace FizzySteam
+namespace Mirror.FizzySteam
 {
 
     internal class SteamClient
