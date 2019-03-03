@@ -2,7 +2,7 @@
 using System;
 using Steamworks;
 
-namespace FizzySteam
+namespace Mirror.FizzySteam
 {
     public class Common
     {
