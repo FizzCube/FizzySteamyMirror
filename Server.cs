@@ -262,9 +262,8 @@ namespace FizzySteam
             catch (KeyNotFoundException)
             {
                 //we have no idea who this connection is
-                Debug.LogError("Tryign to disconnect a connection thats not known " + connectionId);
+                Debug.LogWarning("Trying to disconnect a connection thats not known " + connectionId);
             }
-            Debug.LogWarning("Tryign to disconnect a connection thats not known " + connectionId);
             return false;
         }
 
