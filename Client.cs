@@ -3,7 +3,7 @@ using System;
 using Steamworks;
 using System.Threading.Tasks;
 
-namespace FizzySteam
+namespace Mirror.FizzySteam
 {
     public class Client : Common
     {
