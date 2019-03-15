@@ -3,6 +3,7 @@ using Steamworks;
 
 namespace Mirror.FizzySteam
 {
+    [HelpURL("https://vis2k.github.io/Mirror/Transports/Fizzy")]
     public class FizzySteamyMirror : Transport
     {
         protected FizzySteam.Client client = new FizzySteam.Client();
