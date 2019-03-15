@@ -279,6 +279,8 @@ namespace Mirror.FizzySteam
 
             //Wait a short time before calling steams disconnect function so the message has time to go out
             await Task.Delay(100);
+            steamConnectionMap.Remove(steamClient);
+            OnDisconnected?.Invoke(steamClient.connectionID);
             CloseP2PSessionWithUser(steamClient.steamID);
         }
 
