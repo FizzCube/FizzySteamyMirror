@@ -1,5 +1,6 @@
 using UnityEngine;
 using Steamworks;
+using System;
 
 namespace Mirror.FizzySteam
 {
@@ -14,6 +15,10 @@ namespace Mirror.FizzySteam
         private void Start()
         {
             Common.secondsBetweenPolls = messageUpdateRate;
+            if (channels == null) {
+                channels = new EP2PSend[2] { EP2PSend.k_EP2PSendReliable, EP2PSend.k_EP2PSendUnreliable };
+            }
+            channels[0] = EP2PSend.k_EP2PSendReliable;
             Common.channels = channels;
         }
 
@@ -22,13 +27,13 @@ namespace Mirror.FizzySteam
             // dispatch the events from the server
             server.OnConnected += (id) => OnServerConnected?.Invoke(id);
             server.OnDisconnected += (id) => OnServerDisconnected?.Invoke(id);
-            server.OnReceivedData += (id, data) => OnServerDataReceived?.Invoke(id, data);
+            server.OnReceivedData += (id, data) => OnServerDataReceived?.Invoke(id, new ArraySegment<byte>(data));
             server.OnReceivedError += (id, exception) => OnServerError?.Invoke(id, exception);
 
             // dispatch events from the client
             client.OnConnected += () => OnClientConnected?.Invoke();
             client.OnDisconnected += () => OnClientDisconnected?.Invoke();
-            client.OnReceivedData += (data) => OnClientDataReceived?.Invoke(data);
+            client.OnReceivedData += (data) => OnClientDataReceived?.Invoke(new ArraySegment<byte>(data));
             client.OnReceivedError += (exception) => OnClientError?.Invoke(exception);
 
             Debug.Log("FizzySteamyMirror initialized!");
