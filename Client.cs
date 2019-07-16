@@ -135,7 +135,8 @@ namespace Mirror.FizzySteam
             if (!Disconnected)
             {
                 SendInternal(hostSteamID, disconnectMsgBuffer);
-                Disconnected = true;
+
+                state = ConnectionState.DISCONNECTED;
                 cancelToken.Cancel();
 
                 //Wait a short time before calling steams disconnect function so the message has time to go out
