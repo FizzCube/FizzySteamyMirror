@@ -4,10 +4,6 @@ Fizzcube bringing together [Steam](https://store.steampowered.com/) and [Mirror]
 
 This project was previously called **"SteamNetNetworkTransport"**, this is Version 2 it's a complete rebuild utilising Async of a Steam P2P network transport layer for [Mirror](https://github.com/vis2k/Mirror)
 
-## Quick start - Demo Project 
-
-(coming soon)
-
 ## Dependencies
 Both of these projects need to be installed and working before you can use this transport.
 1. [Steamworks.NET](https://github.com/rlabrecque/Steamworks.NET) FizzySteamyMirror relies on Steamworks.NET to communicate with the [Steamworks API](https://partner.steamgames.com/doc/sdk). **Requires .Net 4.x**  
@@ -17,7 +13,7 @@ Both of these projects need to be installed and working before you can use this 
 ## Setting Up
 * Note: if you want an easy import, skip the steps bellow & take the [release](https://github.com/Raystorms/FizzySteamyMirror/releases), it has Steamworks.Net already included. (if you already have Steamworks.Net in your project, you might need to delete either your import or the one included in the release).
 
-1. Download and install the dependencies 
+1. Download and install the dependencies **Download the unitypackage from release for easy all in one**
 2. Download **"FizzySteamyMirror"** and place in your Assets folder somewhere. **If errors occur, open a [Issue ticket.](https://github.com/FizzCube/FizzySteamyMirror/issues)**
 3. In your ![Image](http://i.galtrox.com/index.php/s/LX2KPkezLwazrTS/preview) object replace ![Image](http://i.galtrox.com/index.php/s/LTwTTyZLtbmGHY6/preview) with ![Image](http://i.galtrox.com/index.php/s/5PJBqPjJiFdqxG9/preview) 
 
@@ -30,11 +26,11 @@ Both of these projects need to be installed and working before you can use this 
 **Note: The 480(Spacewar) appid is a very grey area, technically, it's not allowed but they don't really do anything about it.
 If you know a better way around this please make a [Issue ticket.](https://github.com/FizzCube/FizzySteamyMirror/issues)**
 
-**Note: When you have a appid from steam then replace the 480 with your own game appid.**
+**Note: When you have your own appid from steam then replace the 480 with your own game appid.**
 
 ## Host
 1. Open your game through Steam
-2. Host your game ![Image](http://i.galtrox.com/index.php/s/ycNEwXKf5jdYD8T/preview)
+2. Host your game through the NetworkManagerHUD
 3. if it says your playing **"Spacewar"** in Steam **"congrats its working!"**
 
 **Note: You can run it in Unity aswell**
@@ -42,8 +38,10 @@ If you know a better way around this please make a [Issue ticket.](https://githu
 ## Client
 1. Send the game to your buddy.
 2. The client needs the steam64id of the host to be able to connect.
-3. Place the steam64id into the  then click "Lan Client"
+3. Place the steam64id into the address of NetworkManagerHUD then click "Lan Client"
 4. **Bing bash bong DONE!**
+
+**Joining through code is the same like any other transport in mirror, just pass the steam64id as the address**
 
 ## Play Testing your game locally
 
