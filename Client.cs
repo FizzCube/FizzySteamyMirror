@@ -14,7 +14,7 @@ namespace Mirror.FizzySteam
         }
 
         public event Action<Exception> OnReceivedError;
-        public event Action<byte[]> OnReceivedData;
+        public event Action<byte[], int> OnReceivedData;
         public event Action OnConnected;
         public event Action OnDisconnected;
 
@@ -135,8 +135,7 @@ namespace Mirror.FizzySteam
             if (!Disconnected)
             {
                 SendInternal(hostSteamID, disconnectMsgBuffer);
-
-                state = ConnectionState.DISCONNECTED;
+                Disconnected = true;
                 cancelToken.Cancel();
 
                 //Wait a short time before calling steams disconnect function so the message has time to go out
@@ -168,7 +167,7 @@ namespace Mirror.FizzySteam
                                 continue;
                             }
                             // we received some data,  raise event
-                            OnReceivedData?.Invoke(receiveBuffer);
+                            OnReceivedData?.Invoke(receiveBuffer, i);
                         }
                     }
                     //not got a message - wait a bit more

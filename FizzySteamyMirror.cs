@@ -1,6 +1,7 @@
 using UnityEngine;
 using Steamworks;
 using System;
+using System.Collections.Generic;
 
 namespace Mirror.FizzySteam
 {
@@ -27,13 +28,13 @@ namespace Mirror.FizzySteam
             // dispatch the events from the server
             server.OnConnected += (id) => OnServerConnected?.Invoke(id);
             server.OnDisconnected += (id) => OnServerDisconnected?.Invoke(id);
-            server.OnReceivedData += (id, data) => OnServerDataReceived?.Invoke(id, new ArraySegment<byte>(data));
+            server.OnReceivedData += (id, data, channel) => OnServerDataReceived?.Invoke(id, new ArraySegment<byte>(data), channel);
             server.OnReceivedError += (id, exception) => OnServerError?.Invoke(id, exception);
 
             // dispatch events from the client
             client.OnConnected += () => OnClientConnected?.Invoke();
             client.OnDisconnected += () => OnClientDisconnected?.Invoke();
-            client.OnReceivedData += (data) => OnClientDataReceived?.Invoke(new ArraySegment<byte>(data));
+            client.OnReceivedData += (data, channel) => OnClientDataReceived?.Invoke(new ArraySegment<byte>(data), channel);
             client.OnReceivedError += (exception) => OnClientError?.Invoke(exception);
 
             Debug.Log("FizzySteamyMirror initialized!");
@@ -42,7 +43,7 @@ namespace Mirror.FizzySteam
         // client
         public override bool ClientConnected() { return client.Connected; }
         public override void ClientConnect(string address) { client.Connect(address); }
-        public override bool ClientSend(int channelId, byte[] data) { return client.Send(data, channelId); }
+        public override bool ClientSend(int channelId, ArraySegment<byte> segment) { return client.Send(segment.Array, channelId); }
         public override void ClientDisconnect() { client.Disconnect(); }
 
         // server
@@ -57,7 +58,7 @@ namespace Mirror.FizzySteam
             Debug.LogError("FizzySteamyMirror.ServerStartWebsockets not possible!");
         }
 
-        public override bool ServerSend(int connectionId, int channelId, byte[] data) { return server.Send(connectionId, data, channelId); }
+        public override bool ServerSend(List<int> connectionIds, int channelId, ArraySegment<byte> segment) { return server.Send(connectionIds, segment.Array, channelId); }
 
         public override bool ServerDisconnect(int connectionId)
         {

@@ -80,7 +80,7 @@ namespace Mirror.FizzySteam
         }
 
         public event Action<int> OnConnected;
-        public event Action<int, byte[]> OnReceivedData;
+        public event Action<int, byte[], int> OnReceivedData;
         public event Action<int> OnDisconnected;
         public event Action<int, Exception> OnReceivedError;
 
@@ -215,7 +215,7 @@ namespace Mirror.FizzySteam
                             try {
                                 int connectionId = steamConnectionMap.fromSteamID[clientSteamID].connectionID;
                                 // we received some data,  raise event
-                                OnReceivedData?.Invoke(connectionId, receiveBuffer);
+                                OnReceivedData?.Invoke(connectionId, receiveBuffer,i);
                             } catch (KeyNotFoundException) {
                                 CloseP2PSessionWithUser(clientSteamID);
                                 //we have no idea who this connection is
@@ -284,22 +284,18 @@ namespace Mirror.FizzySteam
             CloseP2PSessionWithUser(steamClient.steamID);
         }
 
-        public bool Send(int connectionId, byte[] data, int channelId = 0)
-        {
-            try
-            {
-                SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionId];
-                //will default to reliable at channel 0 if sent on an unknown channel
-                Send(steamClient.steamID, data, channelToSendType(channelId), channelId >= channels.Length ? 0 : channelId);
-                return true;
+        public bool Send(List<int> connectionIds, byte[] data, int channelId = 0) {
+            for (int i = 0; i < connectionIds.Count; i++) {
+                try {
+                    SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionIds[i]];
+                    //will default to reliable at channel 0 if sent on an unknown channel
+                    Send(steamClient.steamID, data, channelToSendType(channelId), channelId >= channels.Length ? 0 : channelId);
+                } catch (KeyNotFoundException) {
+                    //we have no idea who this connection is
+                    Debug.LogError("Tryign to Send on a connection thats not known " + connectionIds[i]);
+                }
             }
-            catch (KeyNotFoundException)
-            {
-                //we have no idea who this connection is
-                Debug.LogError("Tryign to Send on a connection thats not known " + connectionId);
-                return false;
-            }
-
+            return true;
         }
 
         public string ServerGetClientAddress(int connectionId)
