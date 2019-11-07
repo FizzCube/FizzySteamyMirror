@@ -23,7 +23,7 @@ namespace Mirror.FizzySteam
             Common.channels = channels;
         }
 
-    public FizzySteamyMirror()
+        public FizzySteamyMirror()
         {
             // dispatch the events from the server
             server.OnConnected += (id) => OnServerConnected?.Invoke(id);
