@@ -129,7 +129,7 @@ namespace Mirror.FizzySteam
 
 
         //start a async loop checking for internal messages and processing them. This includes internal connect negotiation and disconnect requests so runs outside "connected"
-        private async Task InternalReceiveLoop()
+        private async void InternalReceiveLoop()
         {
             Debug.Log("InternalReceiveLoop Start");
 
