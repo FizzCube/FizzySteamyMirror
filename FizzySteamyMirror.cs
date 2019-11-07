@@ -23,7 +23,7 @@ namespace Mirror.FizzySteam
             Common.channels = channels;
         }
 
-        public FizzySteamyMirror()
+    public FizzySteamyMirror()
         {
             // dispatch the events from the server
             server.OnConnected += (id) => OnServerConnected?.Invoke(id);
@@ -90,5 +90,17 @@ namespace Mirror.FizzySteam
                     return 0;
             }
         }
-    }
+
+        public override bool Available()
+        {
+            try
+            {
+                return SteamManager.Initialized;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+  }
 }
