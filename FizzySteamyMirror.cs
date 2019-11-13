@@ -75,19 +75,22 @@ namespace Mirror.FizzySteam
             server.Stop();
         }
 
-        public override int GetMaxPacketSize(int channelId)
-        {
-            switch (channelId)
-            {
-                case Channels.DefaultUnreliable:
+        public override int GetMaxPacketSize(int channelId) {
+            if (channelId >= channels.Length) {
+                channelId = 0;
+            }
+            EP2PSend sendMethod = channels[channelId];
+            switch (sendMethod) {
+                case EP2PSend.k_EP2PSendUnreliable:
                     return 1200; //UDP like - MTU size.
-
-                case Channels.DefaultReliable:
+                case EP2PSend.k_EP2PSendUnreliableNoDelay:
+                    return 1200; //UDP like - MTU size.
+                case EP2PSend.k_EP2PSendReliable:
                     return 1048576; //Reliable message send. Can send up to 1MB of data in a single message.
-
+                case EP2PSend.k_EP2PSendReliableWithBuffering:
+                    return 1048576; //Reliable message send. Can send up to 1MB of data in a single message.
                 default:
-                    Debug.LogError("Unknown channel so uknown max size");
-                    return 0;
+                    return 1200; //UDP like - MTU size.
             }
         }
 
