@@ -129,7 +129,7 @@ namespace Mirror.FizzySteam
 
 
         //start a async loop checking for internal messages and processing them. This includes internal connect negotiation and disconnect requests so runs outside "connected"
-        private async Task InternalReceiveLoop()
+        private async void InternalReceiveLoop()
         {
             Debug.Log("InternalReceiveLoop Start");
 
@@ -179,6 +179,7 @@ namespace Mirror.FizzySteam
                                 {
                                     //we have no idea who this connection is
                                     Debug.LogError("Trying to disconnect a client thats not known SteamID " + clientSteamID);
+                                    OnReceivedError?.Invoke(-1, new Exception("ERROR Unknown SteamID"));
                                 }
 
                                 break;
@@ -220,6 +221,7 @@ namespace Mirror.FizzySteam
                                 CloseP2PSessionWithUser(clientSteamID);
                                 //we have no idea who this connection is
                                 Debug.LogError("Data received from steam client thats not known " + clientSteamID);
+                                OnReceivedError?.Invoke(-1, new Exception("ERROR Unknown SteamID"));
                             }
                         }
                     }
@@ -293,6 +295,7 @@ namespace Mirror.FizzySteam
                 } catch (KeyNotFoundException) {
                     //we have no idea who this connection is
                     Debug.LogError("Tryign to Send on a connection thats not known " + connectionIds[i]);
+                    OnReceivedError?.Invoke(connectionIds[i], new Exception("ERROR Unknown Connection"));
                 }
             }
             return true;
@@ -309,6 +312,7 @@ namespace Mirror.FizzySteam
             {
                 //we have no idea who this connection is
                 Debug.LogError("Trying to get info on an unknown connection " + connectionId);
+                OnReceivedError?.Invoke(connectionId, new Exception("ERROR Unknown Connection"));
             }
 
             return null;

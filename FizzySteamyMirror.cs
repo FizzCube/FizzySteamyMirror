@@ -90,5 +90,17 @@ namespace Mirror.FizzySteam
                     return 0;
             }
         }
-    }
+
+        public override bool Available()
+        {
+            try
+            {
+                return SteamManager.Initialized;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+  }
 }
