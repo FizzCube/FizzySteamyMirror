@@ -15,7 +15,7 @@ Both of these projects need to be installed and working before you can use this 
 
 1. Download and install the dependencies **Download the unitypackage from release for easy all in one**
 2. Download **"FizzySteamyMirror"** and place in your Assets folder somewhere. **If errors occur, open a [Issue ticket.](https://github.com/FizzCube/FizzySteamyMirror/issues)**
-3. In your ![Image](http://i.galtrox.com/index.php/s/LX2KPkezLwazrTS/preview) object replace ![Image](http://i.galtrox.com/index.php/s/LTwTTyZLtbmGHY6/preview) with ![Image](http://i.galtrox.com/index.php/s/5PJBqPjJiFdqxG9/preview) 
+3. In your NetworkManager object replace Telepathy (or any other active transport) with FizzySteamyMirror.
 
 ## Building
 1. When Building your game you have to place **"steam_appid.txt"** into the directory of the game. If you cant find it well, just make a **"steam_appid.txt"** and place **480** in side.
