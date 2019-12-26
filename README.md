@@ -16,6 +16,7 @@ Both of these projects need to be installed and working before you can use this 
 1. Download and install the dependencies **Download the unitypackage from release for easy all in one**
 2. Download **"FizzySteamyMirror"** and place in your Assets folder somewhere. **If errors occur, open a [Issue ticket.](https://github.com/FizzCube/FizzySteamyMirror/issues)**
 3. In your NetworkManager object replace Telepathy (or any other active transport) with FizzySteamyMirror.
+4. Create a empty object in your scene and attach the **"Steam Manager"** script to it.
 
 ## Building
 1. When Building your game you have to place **"steam_appid.txt"** into the directory of the game. If you cant find it well, just make a **"steam_appid.txt"** and place **480** in side.
