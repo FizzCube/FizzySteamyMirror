@@ -28,15 +28,15 @@ Both of these projects need to be installed and working before you can use this 
 If you know a better way around this please make a [Issue ticket.](https://github.com/Raystorms/FizzySteamyMirror/issues)**
 
 ## Host
-1. Open your game through Steam
-2. Host your game
-3. if it says your playing **"Spacewar"** in Steam **congrats its working!**
+To be able to have your game working you need to make sure you have steam running. 
+**Note: You can also run it in Unity**
 
-**Note: You can run it in Unity aswell**
+1. Host your game
+2. if it says your playing **"Spacewar"** in Steam **congrats its working!**
 
 ## Client
 1. Send the game to your buddy.
-2. The client needs the steam64id of the host to be able to connect.
+2. The client needs the **steam64id** of the host to be able to connect.
 3. Place the steam64id into **"localhost"** then click **"Lan Client"**
 4. **Bing bash bong DONE!**
 
