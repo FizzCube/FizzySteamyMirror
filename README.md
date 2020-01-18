@@ -28,18 +28,20 @@ Both of these projects need to be installed and working before you can use this 
 If you know a better way around this please make a [Issue ticket.](https://github.com/Raystorms/FizzySteamyMirror/issues)**
 
 ## Host
-To be able to have your game working you need to make sure you have steam running. 
+To be able to have your game working you need to make sure you have steam running in the background. 
 **Note: You can also run it in Unity**
 
 1. Host your game
 2. if it says your playing **"Spacewar"** in Steam **congrats its working!**
 
 ## Client
+Before sending your game to your buddy make sure you have your **steamID64** ready. To find your **steamID64** goto **[Steamid.io](https://steamid.io/lookup)** and enter your steam profile URL.
+
 1. Send the game to your buddy.
-2. The client needs the **steam64id** of the host to be able to connect.
-3. Place the steam64id into **"localhost"** then click **"Lan Client"**
-4. **Bing bash bong DONE!**
+2. Your buddy needs your **steamID64** to be able to connect.
+3. Place the **steamID64** into **"localhost"** then click **"Lan Client"**
+5. Then they will be connected to you.
 
 ## Testing your game locally
 
-You cant connect to yourself locally while using **FizzySteamyMirror**. If you want to test your game locally you'll have to use **"Telepathy Transport"** instead of **"Fizzy Steamy Mirror"**.
+You cant connect to yourself locally while using **FizzySteamyMirror** since it's using steams P2P. If you want to test your game locally you'll have to use **"Telepathy Transport"** instead of **"Fizzy Steamy Mirror"**.
