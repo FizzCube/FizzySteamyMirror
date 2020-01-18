@@ -40,10 +40,6 @@ If you know a better way around this please make a [Issue ticket.](https://githu
 3. Place the steam64id into **"localhost"** then click **"Lan Client"**
 4. **Bing bash bong DONE!**
 
-## Play Testing your game locally
+## Testing your game locally
 
-1. You need to have both scripts **"Fizzy Steamy Mirror"** and **"Telepathy Transport"**
-
-2. To test it locally disable **"Fizzy Steamy Mirror"** and enable **"Telepathy Transport"**
-
-3. To test it on Steam P2P again enable **"Fizzy Steamy Mirror"** and disable **"Telepathy Transport"**
+You cant connect to yourself locally while using **FizzySteamyMirror**. If you want to test your game locally you'll have to use **"Telepathy Transport"** instead of **"Fizzy Steamy Mirror"**.
