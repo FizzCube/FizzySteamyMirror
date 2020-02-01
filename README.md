@@ -1,3 +1,12 @@
+# This repo is no longer maintained
+
+This repo was maintained by [Raystorms](https://github.com/Raystorms), but due to personal situations they are not longer able to maintain the repo. 
+
+The **Mirror** community has stepped in and now [Chykary](https://github.com/Chykary) is the maintainer of **FizzySteamyMirror**.
+
+Download the latest version of **FizzySteamyMirror** please goto: **[FizzySteamyMirror](https://github.com/Chykary/FizzySteamyMirror).**
+
+
 # FizzySteamyMirror
 
 This is a community maintained repo forked from [FizzCube](https://github.com/FizzCube/FizzySteamyMirror). Mirror [docs](https://mirror-networking.com/docs/Transports/Fizzy.html).
