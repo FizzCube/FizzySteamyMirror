@@ -2,7 +2,7 @@
 using System;
 using Steamworks;
 
-namespace FizzySteam
+namespace Mirror.FizzySteam
 {
     public class Common
     {
@@ -10,7 +10,7 @@ namespace FizzySteam
         protected enum SteamChannels : int
         {
             SEND_DATA,
-            SEND_INTERNAL
+            SEND_INTERNAL = 100
         }
 
         protected enum InternalMessages : byte
@@ -30,6 +30,7 @@ namespace FizzySteam
         readonly static protected byte[] connectMsgBuffer = new byte[] { (byte)InternalMessages.CONNECT };
         readonly static protected byte[] acceptConnectMsgBuffer = new byte[] { (byte)InternalMessages.ACCEPT_CONNECT };
         readonly static protected byte[] disconnectMsgBuffer = new byte[] { (byte)InternalMessages.DISCONNECT };
+        public static EP2PSend[] channels;
 
         readonly static protected uint maxPacketSize = 1048576;
         readonly protected byte[] receiveBufferInternal = new byte[1];
@@ -96,6 +97,7 @@ namespace FizzySteam
         protected virtual void OnConnectFail(P2PSessionConnectFail_t result)
         {
             Debug.Log("OnConnectFail " + result);
+            throw new Exception("Failed to connect");
         }
 
         protected void SendInternal(CSteamID host, byte[] msgBuffer)
@@ -116,16 +118,19 @@ namespace FizzySteam
             return SteamNetworking.ReadP2PPacket(receiveBufferInternal, 1, out readPacketSize, out clientSteamID, (int)SteamChannels.SEND_INTERNAL);
         }
 
-        protected void Send(CSteamID host, byte[] msgBuffer, EP2PSend sendType)
+        protected void Send(CSteamID host, byte[] msgBuffer, EP2PSend sendType, int channel)
         {
             if (!SteamManager.Initialized)
             {
                 throw new ObjectDisposedException("Steamworks");
             }
-            SteamNetworking.SendP2PPacket(host, msgBuffer, (uint)msgBuffer.Length, sendType, (int)SteamChannels.SEND_DATA);
+            if (channel >= channels.Length) {
+                channel = 0;
+            }
+            SteamNetworking.SendP2PPacket(host, msgBuffer, (uint)msgBuffer.Length, sendType, channel);
         }
 
-        protected bool Receive(out uint readPacketSize, out CSteamID clientSteamID, out byte[] receiveBuffer)
+        protected bool Receive(out uint readPacketSize, out CSteamID clientSteamID, out byte[] receiveBuffer, int channel)
         {
             if (!SteamManager.Initialized)
             {
@@ -133,10 +138,10 @@ namespace FizzySteam
             }
 
             uint packetSize;
-            if (SteamNetworking.IsP2PPacketAvailable(out packetSize, (int)SteamChannels.SEND_DATA) && packetSize > 0)
+            if (SteamNetworking.IsP2PPacketAvailable(out packetSize, channel) && packetSize > 0)
             {
                 receiveBuffer = new byte[packetSize];
-                return SteamNetworking.ReadP2PPacket(receiveBuffer, packetSize, out readPacketSize, out clientSteamID, (int)SteamChannels.SEND_DATA);
+                return SteamNetworking.ReadP2PPacket(receiveBuffer, packetSize, out readPacketSize, out clientSteamID, channel);
             }
 
             receiveBuffer = null;
@@ -175,15 +180,11 @@ namespace FizzySteam
 
         protected EP2PSend channelToSendType(int channelId)
         {
-            switch(channelId)
-            {
-                case 0 /*Channels.DefaultReliable*/:
-                    return EP2PSend.k_EP2PSendReliable;
-
-                /*Channels.DefaultUnreliable*/
-                default:
-                    return EP2PSend.k_EP2PSendUnreliable;
+            if (channelId >= channels.Length) {
+                Debug.LogError("Unknown channel id, please set it up in the component, will now send reliably");
+                return EP2PSend.k_EP2PSendReliable;
             }
+            return channels[channelId];
         }
 
     }

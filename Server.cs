@@ -5,7 +5,7 @@ using System;
 using Steamworks;
 using System.Threading.Tasks;
 
-namespace FizzySteam
+namespace Mirror.FizzySteam
 {
 
     internal class SteamClient
@@ -80,7 +80,7 @@ namespace FizzySteam
         }
 
         public event Action<int> OnConnected;
-        public event Action<int, byte[]> OnReceivedData;
+        public event Action<int, byte[], int> OnReceivedData;
         public event Action<int> OnDisconnected;
         public event Action<int, Exception> OnReceivedError;
 
@@ -129,7 +129,7 @@ namespace FizzySteam
 
 
         //start a async loop checking for internal messages and processing them. This includes internal connect negotiation and disconnect requests so runs outside "connected"
-        private async Task InternalReceiveLoop()
+        private async void InternalReceiveLoop()
         {
             Debug.Log("InternalReceiveLoop Start");
 
@@ -179,6 +179,7 @@ namespace FizzySteam
                                 {
                                     //we have no idea who this connection is
                                     Debug.LogError("Trying to disconnect a client thats not known SteamID " + clientSteamID);
+                                    OnReceivedError?.Invoke(-1, new Exception("ERROR Unknown SteamID"));
                                 }
 
                                 break;
@@ -206,28 +207,24 @@ namespace FizzySteam
                 byte[] receiveBuffer;
                 while (!Offline)
                 {
+                    for (int i = 0; i < channels.Length; i++) {
+                        while (Receive(out readPacketSize, out clientSteamID, out receiveBuffer, i)) {
+                            if (readPacketSize == 0) {
+                                continue;
+                            }
 
-                    while (Receive(out readPacketSize, out clientSteamID, out receiveBuffer))
-                    {
-                        if (readPacketSize == 0)
-                        {
-                            continue;
-                        }
-
-                        try
-                        {
-                            int connectionId = steamConnectionMap.fromSteamID[clientSteamID].connectionID;
-                            // we received some data,  raise event
-                            OnReceivedData?.Invoke(connectionId, receiveBuffer);
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            CloseP2PSessionWithUser(clientSteamID);
-                            //we have no idea who this connection is
-                            Debug.LogError("Data received from steam client thats not known " + clientSteamID);
+                            try {
+                                int connectionId = steamConnectionMap.fromSteamID[clientSteamID].connectionID;
+                                // we received some data,  raise event
+                                OnReceivedData?.Invoke(connectionId, receiveBuffer,i);
+                            } catch (KeyNotFoundException) {
+                                CloseP2PSessionWithUser(clientSteamID);
+                                //we have no idea who this connection is
+                                Debug.LogError("Data received from steam client thats not known " + clientSteamID);
+                                OnReceivedError?.Invoke(-1, new Exception("ERROR Unknown SteamID"));
+                            }
                         }
                     }
-
                     //not got a message - wait a bit more
                     await Task.Delay(TimeSpan.FromSeconds(secondsBetweenPolls));
                 }
@@ -245,17 +242,11 @@ namespace FizzySteam
 
         public void Stop()
         {
-            Debug.Log("Server Stop");
+            Debug.LogWarning("Server Stop");
             // only if started
             if (!Active) return;
 
             Offline = true;
-
-            foreach (var connection in steamConnectionMap)
-            {
-                SteamClient steamClient = connection.Value;
-                Disconnect(steamClient);
-            }
 
             deinitialise();
             Debug.Log("Server Stop Finished");
@@ -273,7 +264,7 @@ namespace FizzySteam
             catch (KeyNotFoundException)
             {
                 //we have no idea who this connection is
-                Debug.LogError("Tryign to disconnect a connection thats not known " + connectionId);
+                Debug.LogWarning("Trying to disconnect a connection thats not known " + connectionId);
             }
             return false;
         }
@@ -288,46 +279,43 @@ namespace FizzySteam
             SendInternal(steamClient.steamID, disconnectMsgBuffer);
             steamClient.state = SteamClient.ConnectionState.DISCONNECTING;
 
-            // raise event
-            OnDisconnected?.Invoke(steamClient.connectionID);
-
             //Wait a short time before calling steams disconnect function so the message has time to go out
             await Task.Delay(100);
+            steamConnectionMap.Remove(steamClient);
+            OnDisconnected?.Invoke(steamClient.connectionID);
             CloseP2PSessionWithUser(steamClient.steamID);
         }
 
-        public void Send(int connectionId, byte[] data, int channelId = 0)
-        {
-            try
-            {
-                SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionId];
-
-                Send(steamClient.steamID, data, channelToSendType(channelId));
+        public bool Send(List<int> connectionIds, byte[] data, int channelId = 0) {
+            for (int i = 0; i < connectionIds.Count; i++) {
+                try {
+                    SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionIds[i]];
+                    //will default to reliable at channel 0 if sent on an unknown channel
+                    Send(steamClient.steamID, data, channelToSendType(channelId), channelId >= channels.Length ? 0 : channelId);
+                } catch (KeyNotFoundException) {
+                    //we have no idea who this connection is
+                    Debug.LogError("Tryign to Send on a connection thats not known " + connectionIds[i]);
+                    OnReceivedError?.Invoke(connectionIds[i], new Exception("ERROR Unknown Connection"));
+                }
             }
-            catch (KeyNotFoundException)
-            {
-                //we have no idea who this connection is
-                Debug.LogError("Tryign to Send on a connection thats not known " + connectionId);
-            }
-
+            return true;
         }
 
-        public bool GetConnectionInfo(int connectionId, out string address)
+        public string ServerGetClientAddress(int connectionId)
         {
             try
             {
                 SteamClient steamClient = steamConnectionMap.fromConnectionID[connectionId];
-                address = steamClient.steamID.ToString();
-                return true;
+                return steamClient.steamID.ToString();
             }
             catch (KeyNotFoundException)
             {
                 //we have no idea who this connection is
-                Debug.LogError("Tryign to get info on a connection thats not known " + connectionId);
+                Debug.LogError("Trying to get info on an unknown connection " + connectionId);
+                OnReceivedError?.Invoke(connectionId, new Exception("ERROR Unknown Connection"));
             }
 
-            address = null;
-            return false;
+            return null;
         }
 
         protected override void initialise()

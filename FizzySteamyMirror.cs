@@ -1,90 +1,109 @@
-﻿using System;
 using UnityEngine;
-using Mirror;
-using Mirror.Transport;
+using Steamworks;
+using System;
+using System.Collections.Generic;
 
-public class FizzySteamyMirror : TransportLayer
+namespace Mirror.FizzySteam
 {
-    // events for the client
-    public event Action OnClientConnect;
-    public event Action<byte[]> OnClientData;
-    public event Action<Exception> OnClientError;
-    public event Action OnClientDisconnect;
-
-    // events for the server
-    public event Action<int> OnServerConnect;
-    public event Action<int, byte[]> OnServerData;
-    public event Action<int, Exception> OnServerError;
-    public event Action<int> OnServerDisconnect;
-
-    protected FizzySteam.Client client = new FizzySteam.Client();
-    protected FizzySteam.Server server = new FizzySteam.Server();
-
-    public FizzySteamyMirror()
+    [HelpURL("https://vis2k.github.io/Mirror/Transports/Fizzy")]
+    public class FizzySteamyMirror : Transport
     {
-        // dispatch the events from the server
-        server.OnConnected += (id) => OnServerConnect?.Invoke(id);
-        server.OnDisconnected += (id) => OnServerDisconnect?.Invoke(id);
-        server.OnReceivedData += (id, data) => OnServerData?.Invoke(id, data);
-        server.OnReceivedError += (id, exception) => OnServerError?.Invoke(id, exception);
+        protected FizzySteam.Client client = new FizzySteam.Client();
+        protected FizzySteam.Server server = new FizzySteam.Server();
+        public float messageUpdateRate = 0.03333f;
+        public EP2PSend[] channels = new EP2PSend[2] { EP2PSend.k_EP2PSendReliable, EP2PSend.k_EP2PSendUnreliable };
 
-        // dispatch events from the client
-        client.OnConnected += () => OnClientConnect?.Invoke();
-        client.OnDisconnected += () => OnClientDisconnect?.Invoke();
-        client.OnReceivedData += (data) => OnClientData?.Invoke(data);
-        client.OnReceivedError += (exception) => OnClientError?.Invoke(exception);
-
-        Debug.Log("FizzySteamyMirror initialized!");
-    }
-
-    // client
-    public virtual bool ClientConnected() { return client.Connected; }
-    public virtual void ClientConnect(string address, int port) { client.Connect(address); }
-    public virtual void ClientSend(int channelId, byte[] data) { client.Send(data, channelId); }
-    public virtual void ClientDisconnect() { client.Disconnect(); }
-
-    // server
-    public virtual bool ServerActive() { return server.Active; }
-    public virtual void ServerStart()
-    {
-        server.Listen();
-    }
-
-    public virtual void ServerStartWebsockets(string address, int port, int maxConnections)
-    {
-        Debug.LogError("FizzySteamyMirror.ServerStartWebsockets not possible!");
-    }
-
-    public virtual void ServerSend(int connectionId, int channelId, byte[] data) { server.Send(connectionId, data, channelId); }
-
-    public virtual bool ServerDisconnect(int connectionId)
-    {
-        return server.Disconnect(connectionId);
-    }
-
-    public virtual bool GetConnectionInfo(int connectionId, out string address) { return server.GetConnectionInfo(connectionId, out address); }
-    public virtual void ServerStop() { server.Stop(); }
-
-    // common
-    public virtual void Shutdown()
-    {
-        client.Disconnect();
-        server.Stop();
-    }
-
-    public int GetMaxPacketSize(int channelId)
-    {
-        switch (channelId)
+        private void Start()
         {
-            case Channels.DefaultUnreliable:
-                return 1200; //UDP like - MTU size.
-
-            case Channels.DefaultReliable:
-                return 1048576; //Reliable message send. Can send up to 1MB of data in a single message.
-
-            default:
-                Debug.LogError("Unknown channel so uknown max size");
-                return 0;
+            Common.secondsBetweenPolls = messageUpdateRate;
+            if (channels == null) {
+                channels = new EP2PSend[2] { EP2PSend.k_EP2PSendReliable, EP2PSend.k_EP2PSendUnreliable };
+            }
+            channels[0] = EP2PSend.k_EP2PSendReliable;
+            Common.channels = channels;
         }
-    }
+
+        public FizzySteamyMirror()
+        {
+            // dispatch the events from the server
+            server.OnConnected += (id) => OnServerConnected?.Invoke(id);
+            server.OnDisconnected += (id) => OnServerDisconnected?.Invoke(id);
+            server.OnReceivedData += (id, data, channel) => OnServerDataReceived?.Invoke(id, new ArraySegment<byte>(data), channel);
+            server.OnReceivedError += (id, exception) => OnServerError?.Invoke(id, exception);
+
+            // dispatch events from the client
+            client.OnConnected += () => OnClientConnected?.Invoke();
+            client.OnDisconnected += () => OnClientDisconnected?.Invoke();
+            client.OnReceivedData += (data, channel) => OnClientDataReceived?.Invoke(new ArraySegment<byte>(data), channel);
+            client.OnReceivedError += (exception) => OnClientError?.Invoke(exception);
+
+            Debug.Log("FizzySteamyMirror initialized!");
+        }
+
+        // client
+        public override bool ClientConnected() { return client.Connected; }
+        public override void ClientConnect(string address) { client.Connect(address); }
+        public override bool ClientSend(int channelId, ArraySegment<byte> segment) { return client.Send(segment.Array, channelId); }
+        public override void ClientDisconnect() { client.Disconnect(); }
+
+        // server
+        public override bool ServerActive() { return server.Active; }
+        public override void ServerStart()
+        {
+            server.Listen();
+        }
+
+        public virtual void ServerStartWebsockets(string address, int port, int maxConnections)
+        {
+            Debug.LogError("FizzySteamyMirror.ServerStartWebsockets not possible!");
+        }
+
+        public override bool ServerSend(List<int> connectionIds, int channelId, ArraySegment<byte> segment) { return server.Send(connectionIds, segment.Array, channelId); }
+
+        public override bool ServerDisconnect(int connectionId)
+        {
+            return server.Disconnect(connectionId);
+        }
+
+        public override string ServerGetClientAddress(int connectionId) { return server.ServerGetClientAddress(connectionId); }
+        public override void ServerStop() { server.Stop(); }
+
+        // common
+        public override void Shutdown()
+        {
+            client.Disconnect();
+            server.Stop();
+        }
+
+        public override int GetMaxPacketSize(int channelId) {
+            if (channelId >= channels.Length) {
+                channelId = 0;
+            }
+            EP2PSend sendMethod = channels[channelId];
+            switch (sendMethod) {
+                case EP2PSend.k_EP2PSendUnreliable:
+                    return 1200; //UDP like - MTU size.
+                case EP2PSend.k_EP2PSendUnreliableNoDelay:
+                    return 1200; //UDP like - MTU size.
+                case EP2PSend.k_EP2PSendReliable:
+                    return 1048576; //Reliable message send. Can send up to 1MB of data in a single message.
+                case EP2PSend.k_EP2PSendReliableWithBuffering:
+                    return 1048576; //Reliable message send. Can send up to 1MB of data in a single message.
+                default:
+                    return 1200; //UDP like - MTU size.
+            }
+        }
+
+        public override bool Available()
+        {
+            try
+            {
+                return SteamManager.Initialized;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+  }
 }
